@@ -15,7 +15,7 @@
 4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\read-package-json\read-json.js:311:12
 4 verbose stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\graceful-fs\graceful-fs.js:78:16
 4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:380:3)
-5 verbose cwd C:\IBM\1.Mission\2016\OrangeBank\Tooling\obqit
+5 verbose cwd C:\IBM\1.Mission\2016\OrangeBank\Tooling\ibm_question_tool
 6 error Windows_NT 6.1.7601
 7 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
 8 error node v4.5.0
