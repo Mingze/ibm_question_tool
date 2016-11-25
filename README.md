@@ -3,6 +3,15 @@
 This tool is used by GBS France and Watson France groupe to collect customer questions to creat intents and variations in Watson Conversation API. This tool is initially used by IBM Watson Lab Services to help collect questions for Watson Engagement Advisor (WEA).
 
 The tool is developped on Node.js to provide a simple UI for users to enter questions which are stored in a database Cloudant. You can either run it in local or deploy it on IBM Bluemix.
+- [Fonctionnalities](#Fonctionnalities)
+- [Screenshots](#Screenshots)
+- [Initial Setup](#initial-setup)
+  - [Cloudant Setup](#cloudant-setup)
+  - [Bluemix Setup](#bluemix-setup)
+- [QCT Tool Access](#qit-tool-access)
+- [Customizations](#customizations)
+
+
 
 Fonctionnalities:
 - Collect questions and store them in a Cloudant database
@@ -29,13 +38,6 @@ Third page, you can also add some scenarios to help custumers to choose:
 - ![Graph](screenshot/page4.png "Graph")    
 
 
-- [Administrators](#administrators)
-- [Prerequisites](#prerequisites)
-- [Initial Setup](#initial-setup)
-  - [Cloudant Setup](#cloudant-setup)
-  - [Bluemix Setup](#bluemix-setup)
-- [QCT Tool Access](#qit-tool-access)
-- [Customizations](#customizations)
 
 ## Prerequisites
 
