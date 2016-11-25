@@ -10,18 +10,24 @@ Fonctionnalities:
 - Visualise download questions.
 - Show some scenarios to inspire users on the questions.
 
-Screenshot:
+Screenshots:
+Page login:
 - ![Graph](screenshot/login.png "Graph")
+First page, here you can add some information and the objectifs:
 - ![Graph](screenshot/page1.png "Graph")
+Second page, here we ask  here you can add some information:
 - ![Graph](screenshot/page2.png "Graph")
+Third page, choose a domain and post a question:
 - ![Graph](screenshot/page3.png "Graph")
-- ![Graph](screenshot/page4.png "Graph")    
 - ![Graph](screenshot/page5.png "Graph")
+Third page, you can also add some scenarios to help custumers to choose:
+- ![Graph](screenshot/page4.png "Graph")    
+
 
 - [Administrators](#administrators)
 - [Prerequisites](#prerequisites)
 - [Initial Setup](#initial-setup)
-    - [Cloudant Setup](#cloudant-setup)
+  - [Cloudant Setup](#cloudant-setup)
   - [Bluemix Setup](#bluemix-setup)
 - [QCT Tool Access](#qit-tool-access)
 - [Customizations](#customizations)
@@ -138,108 +144,59 @@ Screenshot:
   - When the "Deploy Stage" shows "Deploy to dev succeeded" the app is available for access 
 
 
-## QIT Tool Access
-
-The basic user interface to enter questions can be accessed with the URL shown below. This interface does not require authentication. It will recognize the same user through use of a cookie.
-https://<appname>.mybluemix.net/
-
-The admin interface can be access with the URL shown below. An admin user account is required to authenticate.
-https://<appname>.mybluemix.net/admin
-
-
 ## Customizations
+You can make serveral changes in the "configuration database" that you defined in Cloudant:
 
-Here are some common customizations. After making a change it is recommended to restart the QIT app through the Bluemix console.
+### Change the text shown:
+To change it: Go to ibm_questions_tool/views/home.hbs, this is the main page that users see.
+There are 3 sections in this application with ids: intro, one, two. You can change any texts/icons/images you want.
 
-### Add a customer logo
-
-To add a customer logo you will want to replace the placeholder image. The placeholder images has a size of 300 x 50 pixels. To prevent any modifications to the stylesheet to adjust the position of the logo try to make sure the customer logo has a 50 pixel height.
-
-To change the customer logo:
-1. Create the customer logo image and save it with the name logoCustomer.png
-2. Replace the placeholder image found in the public/images/ directory with the new customer logo
-
-If you find that you need to adjust the stylesheet positioning you can do the following:
-1. Edit the stylesheet, style.css, found in the public/style/ directory
-2. Locate the following styles:
-  .logoCustomerContainer {
-    height: 50px;
-    padding-top: 10px;
-    padding-left: 10px;
-  }
-  .logoCustomer {
-    height: 50px;
-    width: 300px;
-    background-image: url("../images/logoCustomer.png");
-  }
-3. Modify the positioning as necessary
-
+### Change the counter for domain.
+Each time you change the domain we can see how many questions per domain were submitted.
+To change it: Go to ibm_questions_tool/views/home.hbs, 
 ### Change the cookie expiration
-
-The browser cookie expiration is controlled by the "cookie_expiration" property. By default the cookie expiration is set to 10 days. The app cookie that is set will keep track of a specific user so that he or she will not have to enter in the profile questions every time they access the QIT tool. It will also allow that user to see the past questions entered into the tool.
-
-To change the cookie expiration:
-1. Login to Bluemix with the account that you created
-2. Go to the Databases tab
-3. Click on the "configuration" DB
-4. Edit the doc for the customer you are customizing
-5. Update the "cookie_expiration" to the desired value; the time unit is in days
-6. Save the changes to the document
-
+Update the "cookie_expiration" property to the desired value, the time unit is in days
 ### Change the questions goal
-
-The questions goal is controlled by the "questions_goal" property. By default the value is set to 2000. This will affect the display of the admin dashboard.
-
-To change the questions goal:
-1. Login to Bluemix with the account that you created
-2. Go to the Databases tab
-3. Click on the "configuration" DB
-4. Edit the doc for the customer you are customizing
-5. Update the "questions_goal" to the desired value
-6. Save the changes to the document
-
+Update the "questions_goal" property to the desired value, by defaut the value is 2000.
 ### Change the help text
-
-The help text is controlled by the "help_text" property. This help text will be displayed right under the question input text box where users enter in their questions.
-
-To change the help text:
-1. Login to Bluemix with the account that you created
-2. Go to the Databases tab
-3. Click on the "configuration" DB
-4. Edit the doc for the customer you are customizing
-5. Update the "help_text" to the desired value
-6. Save the changes to the document
-
+Update the "help_text" property to the desired text, this will be display unter the question input text box.
 ### Change the profile fields
-
-The interface can dynamically show profile fields for users to enter values for. These profile fields are controlled by the "profile_fields" property. The fields will be displayed under the "Your profile" section. Currently, we only support select drop-down list fields. **PLEASE NOTE** that for the administration interface, only the first two profile fields will be included for the pie charts.
-
-To change the profile fields:
-1. Login to Bluemix with the account that you created
-2. Go to the Databases tab
-3. Click on the "configuration" DB
-4. Edit the doc for the customer you are customizing
-5. Update the "profile_fields" contents where each section of the array is a separate field like the following:
+The interface can dynamically show profile fields for users to enter values for. These profile fields are controlled by the "profile_fields" property. The fields will be displayed under the "Your profile" section. Currently, we only support select drop-down list fields.
+To do so: update the "profile_fields" contents where each section of the array is a separate field like the following:
 ```
     {
-      "id": "level",
+      "id": "domaine",
       "type": "select",
-      "display": "Experience level",
+      "display": "domaine
       "values": [
-        "New (less than 3 months)",
-        "Staff (3 months+)",
-        "Manager",
-        "Supervisor"
+        "domain 1",
+        "domain 2",
+        "domain 3",
       ]
     },
 ```
-6. You can modify the "id" and "display" values to represent the type of profile value you want the users to enter
-7. You can change the list of "values" that are provided to the user to select from
-8. The "type" value must be set to "select"
-9. The order of the fields in the array will be reflected in the user interface, so make sure you set the fields you want to display first at the top
-10. Save the changes to the document
-
-
+You can modify the "id" and "display" values to represent the type of profile value you want the users to enter
+### Add a customer log on the Authentification page:
+Change the login.html locats in ibm_questions_tool/public/login.html, modify the img that you put in /public/images:
+```html
+  <div class="logo">
+      <img src="images/ibm2.gif">
+    </div>
+```
+### Change the scenario text:
+Go to ibm_questions_tool/views/home.hbs, change the list scenario and put your scenarios separated by ",".
+/*Add scenarios*/
+var scenario =[
+"Scenario 1: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 2: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 3: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 4: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 5: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 6: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 7: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 8: Lorem ipsum dolor sit amet, consectetur",
+"Scenario 9: Lorem ipsum dolor sit amet, consectetur"
+];
 
 
 
