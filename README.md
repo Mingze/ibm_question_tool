@@ -13,13 +13,13 @@ The tool is developped on Node.js to provide a simple UI for users to enter ques
 
 
 
-Fonctionnalities:
+## Fonctionnalities:
 - Collect questions and store them in a Cloudant database
 - Add information about the questions such as (name, email, team, domain..)
 - Visualise download questions.
 - Show some scenarios to inspire users on the questions.
 
-Screenshots:
+## Screenshots:
 
 Page login:
 - ![Graph](screenshot/login.png "Graph")
