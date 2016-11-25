@@ -1,0 +1,80 @@
+<script>
+require([
+	"dojo/dom",
+	"dojo/dom-class",
+	"dojo/domReady!"
+],
+function(dom, domClass) {
+	{{#if error}}
+	var statusMsgContainerDiv = dom.byId("statusMsgContainer");
+	var statusMsgDiv = dom.byId("statusMsg");
+	statusMsgDiv.innerHTML = "{{error}}";
+	domClass.add(statusMsgContainerDiv, "statusMsgError");
+	domClass.remove(statusMsgContainerDiv, "hidden");
+	window.setTimeout(function() {clearStatusMsg();}, 5000);
+	{{/if}}
+});
+
+function submit() {
+	require([
+		"dojo/dom",
+	],
+	function(dom) {
+		dom.byId("loginForm").submit();
+	});
+}
+
+function clearStatusMsg() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+	],
+	function(dom, domClass) {
+		var statusMsgContainerDiv = dom.byId("statusMsgContainer");
+		var statusMsgDiv = dom.byId("statusMsg");
+		statusMsgDiv.innerHTML = "";
+		domClass.add(statusMsgContainerDiv, "hidden");
+		domClass.remove(statusMsgContainerDiv, "statusMsgSuccess");
+		domClass.remove(statusMsgContainerDiv, "statusMsgError");
+	});
+}
+</script>
+
+
+<div id="statusMsgContainer" class="statusMsgContainer hidden">
+	<div id="statusMsg" class="statusMsg"></div>
+</div>
+<div class="bodyContainerAdmin">
+	<div class="headerAdmin">
+		<div class="logoContainerAdmin">
+			<div class="logoWatson30"></div>
+		</div>
+		<div class="logoSubcontainerAdmin">
+			<div class="logoQIT30"></div>
+		</div>
+		<div class="customerNameContainerAdmin">{{customer}}</div>
+	</div>
+	<form id="loginForm" action="/login" method="post" onkeydown="if (event.keyCode == 13) { submit(); }">
+	<div class="contentContainerAdmin">
+		<div class="loginFieldContainer"></div>
+		<div class="loginFieldContainer">
+			<div class="loginFieldLabel">Username:</div>
+			<!-- <input id="username" name="username" class="loginField" type="text" value=""/> -->
+			<input id="username" name="username" type="text" value=""/>
+		</div>
+		<div class="loginFieldContainer">
+			<div class="loginFieldLabel">Password:</div>
+			<input id="password" name="password" class="loginField" type="password" value=""/>
+			<input id="password" name="password" type="password" value=""/>
+		</div>
+		<div class="loginSubmitContainer">
+		<div>
+			<div class="btnLogin" onclick="submit();"></div>
+		</div>
+<!-- 		<div class="loginFieldContainer"></div>
+		<div class="loginFieldContainer"></div> -->
+	</div>
+	</form>
+	<div class="footerAdmin"></div>
+</div>	
+

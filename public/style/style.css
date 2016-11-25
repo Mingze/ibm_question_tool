@@ -1,0 +1,595 @@
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    background-color: #fff;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.hidden {
+    display: none;
+} 
+/*
+.jumbotron{
+	margin-bottom: 0px;
+    background-image: url("../images/headerBackgroundWatson.png");
+    background-position: 0% 25%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}*/
+@media (min-width: 500px) {
+  .jumbotron{
+	margin-bottom: 0px;
+    background-image: url("../images/headerBackgroundWatson.png");
+    background-position: 0% 0%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+}
+@media (max-width: 500px) {
+  .container{
+  	padding-left: 0px;
+  	padding-right: 0px;
+  }
+  .jumbotron{
+	margin-bottom: 0px;
+    background-image: url("../images/index2.jpg");
+    background-position: 0% 0%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+}
+
+
+/**
+ * User styles
+ */
+.bodyContainer {
+	height: 100%;
+	/*width: 1000px;*/
+	width: 100%;
+	background: #FFF;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.statusMsgContainer {
+	padding-right:15px;
+	padding-left:15px;
+	margin-right:auto;
+	margin-left:auto;/*
+	position: absolute;
+	top: 0;
+	height: 5%;
+	width: 100%;*/
+}
+.statusMsgSuccess {
+	background: #7bb509;
+}
+.statusMsgError {
+	background: #E71D32;
+}
+
+.statusMsg {
+	height: 30px;
+	width: 100%;
+	margin-top: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	/*padding-left: 20px;*/
+	padding-left: 2%;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.2em;
+	color: #FFF;
+}
+
+.promptMsgContainer {
+	height: 60px;
+	width: 100%;
+}
+
+.promptMsgContents {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.promptMsg{
+	background: #7CC7FF;
+}
+
+.promptMsgText {
+	float: left;
+	padding-top: 15px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+	color: #FFF;
+}
+
+.btnYes {
+	float: left;
+	height: 30px;
+	width: 5%;
+	margin-top: 12px;
+	margin-left: 10px;
+	border: 1px solid #959595;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnYes.png");
+	cursor: pointer;
+}
+.btnYes:hover, .btnYes:focus {
+    background-color: #8CD211;
+}
+
+.btnNo {
+	float: left;
+	height: 30px;
+	width: 5%;
+	margin-top: 12px;
+	margin-left: 10px;
+	margin-right: 10px;
+	border: 1px solid #959595;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnNo.png");
+	cursor: pointer;
+}
+.btnNo:hover, .btnNo:focus {
+    background-color: #E71D32;
+}
+
+.progressBar {
+	float: left;
+	height: 15px;
+	width: 10%;
+	top: 15px;
+}
+.progressIndicator20px {
+	float: left;
+	height: 20px;
+	width: 2%;
+	margin-left: 10px;
+	background-image: url("../images/waiting.gif");
+}
+
+.header {
+	/*height: 200px;*/
+	height: auto;
+	width: 100%;
+	background-image: url("../images/headerBackgroundWatson.png");
+	border-bottom: 1px solid #e0e0e0;
+	background-size: cover
+}
+
+.logoCustomerContainer {
+	height: 50px;
+	padding-top: 10px;
+	padding-left: 1%;
+}
+.logoCustomer {
+	/*height: 50px;*/
+	height: auto;
+	width: 100%;
+	/*background-image: url("../images/orangebank_logo.png") ;*/
+	 background-size:cover;
+}
+.logoContainer {
+	height: 50px;
+	padding-top: 40px;
+	padding-left: 2%;
+}
+.logoWatson {
+	/*height: 50px;*/
+	height: auto;
+	width: 100%;
+	background-image: url("../images/logoWatson.png");
+	background-size:cover;
+}
+.logoSubcontainer {
+	height: 50px;
+	padding-left: 330px;
+}
+.logoQIT {
+	height: 50px;
+	width: 3.5%;
+	background-image: url("../images/logoQIT.png");
+}
+/*.jumbotron{
+	margin-bottom: 0px;
+    background-image: url("../images/headerBackgroundWatson.png");
+    background-position: 0% 25%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}*/
+.questionContainer {
+	/*height: 45px;
+	width: 80%;*/
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 50px;
+	padding-top: 5px;
+}
+.questionField {
+	float: left;
+   /* height: 40px;
+    width: 7.45%;*/
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 2px solid #7CC7FF;
+	background: #f8f8f8;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+}
+.btnHelp {
+	float: left;
+	height: 32px;
+	width: 32px;
+	margin-top: 5px;
+	margin-left: 5px;
+	background-image: url("../images/btnHelp.png");
+	cursor: pointer;
+}
+.btnHelp:hover, .btnHelp:focus {
+    background-image: url("../images/btnHelpOn.png");
+}
+.btnHelpOn {
+	float: left;
+	height: 32px;
+	width: 32px;
+	margin-top: 5px;
+	margin-left: 5px;
+	background-image: url("../images/btnHelpOn.png");
+	cursor: pointer;
+}
+.btnHelpOn:hover, .btnHelpOn:focus {
+    background-image: url("../images/btnHelp.png");
+}
+
+.questionErrorContainer {
+	/*width: 80%;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+.questionError {
+/*	height: 20px;
+	width: 100%;*/
+	margin-top: 2px;
+	padding-left: 10px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.4em;
+	color: #E71D32;
+}
+
+.helpContainer {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.helpText {
+	width: 100%;
+	margin-top: 2px;
+	padding-left: 10px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.2em;
+	font-style: italic;
+	font-weight: lighter;
+	color: #4178BE;
+}
+
+.profileContainer {
+	width: 80%;
+	margin-top: 30px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.profileHeading {
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+	font-weight: bold;
+}
+
+.top-buffer { margin-top:20px; }
+
+.button{
+	padding-top: 5px;
+}
+.profileTable {
+	/*float:left;*/
+	/*width: 100%;*/
+	/*padding: 5px;*/
+	/*border-spacing: 20px;*/
+}
+.profileFieldName {
+	width: 30%;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.4em;
+    
+	text-align: left;
+}
+.profileFieldValue {
+	/*width: 70%;*/
+	padding-left: 5px;
+}
+.profileSelectField {
+	/*float: left;*/
+   /* height: 30px;
+    width: 350px;*/
+    /*padding: 3px;*/
+    /*border: 2px solid #aeaeae;*/
+    color:#ffffff;
+	background: transparent;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    /*font-size: 1.2em;*/
+}
+
+.submitContainer {
+	height: 64px;
+	width: 330px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.submitSpacer {
+	float: left;
+	height: 30px;
+	width: 30px;
+}
+
+.btnSubmit {
+
+	padding:10px 16px;font-size:18px;line-height:1.3333333;border-radius:6px;
+
+	/*float: left;
+	height: 64px;
+	width: 250px;
+	border: 2px solid #aeaeae;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnSubmit.png");
+	cursor: pointer;*/
+}
+.btnSubmit:hover, .btnSubmit:focus {
+    background-color: gray;
+}
+.btnSubmitDisabled {
+	/*float: left;
+	height: 64px;
+	width: 250px;*/
+	/*border: 2px solid #aeaeae;
+	background-color: grey;
+	background-image: url("../images/btnSubmit.png");
+	cursor: default;*/
+}
+
+.progressIndicator {
+	float: left;
+    background-image: url('../images/animated-progress-38x38c.gif');
+  /*  height: 20px;
+    width: 20px;
+	margin-top: 15px;
+	margin-left: 5px;*/
+}
+
+.divider {
+	width: 90%;
+	margin-top: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	border-top: 2px solid #e0e0e0;
+}
+
+.submittedQuestionsContainer {
+	width: 100%;
+	/*margin-top: 30px;*/
+	margin-left: auto;
+	margin-right: auto;
+	/*border: 1px solid #e0e0e0;*/
+}
+.submittedQuestionsHeading {
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+	font-weight: bold;
+}
+.submittedQuestion {
+	/*width: 90%;*/
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 5px;
+	border: 1px solid #e0e0e0;
+	background: #f8f8f8;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1em;
+    color: black;
+}
+
+.footerContainer {
+	height: 100px;
+	width: 1000px;
+	margin-top: 10px;
+	background: #e0e0e0;
+}
+
+/**
+ * Admin styles
+ */
+.bodyContainerAdmin {
+	height: 100%;
+	width: 96%;
+	background: #FFF;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.headerAdmin {
+	height: 50px;
+	width: 100%;
+	background-image: url("../images/headerBackgroundWatsonAdmin.png");
+	background-repeat: no-repeat;
+	background-color: #f5f5f5;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.logoContainerAdmin {
+	float: left;
+	margin-top: 10px;
+	padding-left: 20px;
+}
+.logoSubcontainerAdmin {
+	float: left;
+	margin-top: 15px;
+	padding-left: 10px;
+}
+.customerNameContainerAdmin {
+	float: right;
+	margin-top: 15px;
+	margin-right: 20px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 20px;
+}
+.logoWatson30 {
+	height: 30px;
+	width: 215px;
+	background-image: url("../images/logoWatson30.png");
+}
+.logoQIT30 {
+	height: 30px;
+	width: 210px;
+	background-image: url("../images/logoQIT30.png");
+}
+
+.contentContainerAdmin {
+	width: 100%;
+}
+
+.chartsContainerAdmin {
+	height: 300px;
+	width: 100%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.chartRowAdmin {
+	float: left;
+	border: 1px solid #000;
+}
+
+.loginFieldContainer {
+	height: 40px;
+	width: 500px;
+	margin-top: 5px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.loginFieldLabel {
+	float: left;
+    height: 30px;
+    width: 150px;
+	margin-top: 5px;
+	margin-right: 10px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+	text-align: right;
+}
+
+.loginField {
+	float: left;
+    height: 30px;
+    width: 300px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 2px solid #7CC7FF;
+	background: #f8f8f8;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 1.6em;
+}
+
+.loginSubmitContainer {
+	height: 64px;
+	width: 500px;
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.btnLogin {
+	height: 64px;
+	width: 215px;
+	margin-left: 160px;
+	border: 2px solid #aeaeae;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnLogin.png");
+	cursor: pointer;
+}
+.btnLogin:hover, .btnLogin:focus {
+    background-color: #8CD211;
+}
+
+.filtersContainerAdmin {
+	height: 30px;
+	width: 100%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background: #f5f5f5;
+	border-top: 1px solid #e0e0e0;
+}
+
+.filtersText {
+	float: left;
+	margin-top: 7px;
+	margin-left: 10px;
+	height: 20px;
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 16px;
+}
+
+.filtersSelectField {
+	float: left;
+    height: 30px;
+    width: 180px;
+	margin-left: 10px;
+    padding: 3px;
+    border: 2px solid rgb(208, 210, 211);
+    font-family: Helvetica, "Open Sans", Arial, "Lucida Grande", sans-serif;
+    font-size: 16px;
+}
+
+.btnContainerAdmin {
+	float: right;
+	margin-right: 10px;
+}
+
+.btnDownload {
+	height: 30px;
+	width: 116px;
+	border: 1px solid #959595;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnDownload.png");
+	cursor: pointer;
+}
+.btnDownload:hover, .btnDownload:focus {
+    background-color: #8CD211;
+}
+
+.btnDelete {
+	height: 30px;
+	width: 90px;
+	border: 1px solid #959595;
+	background-color: #c7c7c7;
+	background-image: url("../images/btnDelete.png");
+	cursor: pointer;
+}
+.btnDelete:hover, .btnDelete:focus {
+    background-color: #E71D32;
+}
+
+.footerAdmin {
+	height: 50px;
+	width: 100%;
+	background: #e0e0e0;
+}

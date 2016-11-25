@@ -1,0 +1,8 @@
+{
+  "_id": "_design/ux",
+  "views": {
+    "byCustomer": {
+      "map": "function (doc) {\n  emit(doc.customer_id, [doc.questions, doc.profile_fields]);\n}"
+    }
+  }
+}

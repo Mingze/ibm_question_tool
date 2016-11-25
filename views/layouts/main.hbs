@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>IBM Watson - Question Input Tool</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	
+	<!-- prevent cache -->
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="pragma" content="no-cache">
+	
+	
+	<style type="text/css">
+		/*@import url("//ajax.googleapis.com/ajax/libs/dojo/1.10.3/dojox/grid/enhanced/resources/tundra/EnhancedGrid.css");*/
+		/*@import url("//ajax.googleapis.com/ajax/libs/dojo/1.10.3/dojox/grid/enhanced/resources/EnhancedGrid.css");*/
+		/*@import "style/bootstrap.min.css";*/
+		/*@import "style/style.css";*/
+		@import "assets/css/main.css";
+
+	</style>
+	
+	<script type="text/javascript">
+		var proxyPath = "{{proxyPath}}";
+		if (proxyPath != "") {
+			proxyPath = "/" + proxyPath;	
+		}
+		var dojoConfig = {
+			async: true,
+			paths: {
+				"scripts": proxyPath + "/scripts"
+			}
+		};
+	</script>
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script> 
+</head>
+
+<body class="tundra">
+{{{body}}}
+</body>
+
+</html>

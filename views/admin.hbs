@@ -1,0 +1,538 @@
+<script>
+
+var questionData = [];
+var profileFields = null;
+
+require([
+	"dojo/parser",
+	"dijit/ProgressBar",
+	"dojo/domReady!"
+],
+function(parser, ProgressBar) {
+{{#if user}}
+	load(false);
+{{else}}
+	window.location = "/login";
+{{/if}}
+	
+	parser.parse();
+});
+
+function load(refresh) {
+	require([
+		"dojo/dom",
+		"dojo/request",
+		"dojox/grid/EnhancedGrid",
+		"dojox/grid/enhanced/plugins/Pagination",
+		"dojox/grid/_CheckBoxSelector",
+		"dojo/data/ItemFileWriteStore",
+	],
+	function(dom, request, EnhancedGrid, GridPagination, CheckBoxSelector, ItemFileWriteStore) {
+		var url = "api/configuration";
+		var options = {
+			method: "GET",
+			handleAs: "json",
+		}
+		var deferred = request(url, options);
+		deferred.then(function(result) {
+			//console.log(result);
+			var questionsGoal = result.configuration.questions_goal;
+			var questionColumnWidth = result.configuration.question_column_width;
+			
+			profileFields = result.configuration.profile_fields;
+			renderTableFilters();
+			var profileFieldCount = 0;
+			var profileFieldMap = {};
+			var profileField1 = null;
+			var profileField2 = null;
+			var profileField3 = null;
+			profileFields.forEach(function(field) {
+				profileFieldMap[field.id] = 1;
+				profileFieldCount++;
+				switch(profileFieldCount) {
+					case 1:
+						profileField1 = {
+							id: field.id,
+							display: field.display,
+							piechart_entries: field.piechart_entries
+						};
+						break;
+					case 2:
+						profileField2 = {
+							id: field.id,
+							display: field.display,
+							piechart_entries: field.piechart_entries
+						};
+						break;
+					case 3:
+						profileField3 = {
+							id: field.id,
+							display: field.display,
+							piechart_entries: field.piechart_entries
+						};
+						break;
+				}
+			})
+			//console.log(questionsGoal, profileFields);
+			
+			var url = "api/questions";
+			var options = {
+				method: "GET",
+				handleAs: "json",
+			}
+			var deferred = request(url, options);
+			deferred.then(function(result) {
+				//console.log(result);
+				var questions = result.questions;
+				renderGoalChart(result.count, questionsGoal);
+				
+				questionData = [];
+				var gdata = {
+					identifier: "id",
+					items: []
+				}
+				var count = 1;
+				questions.forEach(function(question) {
+					var dataEntry = {};
+					var questionEntry = {};
+					dataEntry["id"] = count;
+					dataEntry["question_id"] = question.id;
+					dataEntry["question"] = question.question;
+					question.profile_fields.forEach(function(field) {
+						if (profileFieldMap[field.id]) {
+							dataEntry[field.id] = field.value;
+						}
+					});
+					questionEntry["id"] = count;
+					questionEntry["question_id"] = question.id;
+					questionEntry["question"] = question.question;
+					question.profile_fields.forEach(function(field) {
+						if (profileFieldMap[field.id]) {
+							questionEntry[field.id] = field.value;
+						}
+					});
+					//console.log(dataEntry);
+					gdata.items.push(dataEntry);
+					questionData.push(questionEntry);
+					count++;
+				});
+				//console.log(profileField1, profileField2, questionData);
+				
+				if (profileField1)
+					renderProfileChart(questionData, profileField1, "profile1ChartDiv");
+				if (profileField2)
+					renderProfileChart(questionData, profileField2, "profile2ChartDiv");
+				if (profileField3)
+					renderProfileChart(questionData, profileField3, "profile3ChartDiv");
+				
+				if (refresh) {
+					var newStore = new ItemFileWriteStore({data: gdata});
+					var grid = dijit.byId("grid");
+					grid.setStore(newStore);
+					
+					hideProgress();
+					clearPromptMsg();
+				} else {
+					var store = new ItemFileWriteStore({data: gdata});
+					
+					var layoutFields = [];
+					//layoutFields.push({name: "Question ID", field: "question_id", width: "20%", noresize: true});
+					//layoutFields.push({name: "Question", field: "question", width: "20%", noresize: true});
+					layoutFields.push({name: "Question", field: "question", width: questionColumnWidth, noresize: true});
+					profileFields.forEach(function(field) {
+						layoutFields.push({name: field.display, field: field.id, width: field.column_width, noresize: true});
+					});
+					var layout = [
+						{
+							type: "dojox.grid._CheckBoxSelector"
+						},
+						layoutFields
+					];
+					//console.log(layout);
+					
+					var grid = new dojox.grid.EnhancedGrid({
+						id: "grid",
+						store: store,
+						structure: layout,
+						autoHeight: true,
+						selectable: true,
+						plugins: {
+							pagination: {
+								defaultPageSize: 100,
+								pageSizes: ["100", "500", "1000"],
+								description: true,
+								sizeSwitch: true,
+								pageStepper: true,
+								gotoButton: true,
+								maxPageStep: 5,
+								position: "top"
+							}
+						}
+					}, document.createElement('div'));
+						
+					dom.byId("gridDiv").appendChild(grid.domNode);
+					grid.startup();
+				}
+			}, function(error){
+				console.log("API call " + url + " failed with error:" + error);
+			});
+		}, function(error){
+			console.log("API call " + url + " failed with error:" + error);
+		});
+	});
+}
+
+function filterQuestions() {
+	require([
+		"dojo/dom",
+		"dojo/dom-form",
+		"dojo/request",
+		"dojox/grid/EnhancedGrid",
+		"dojox/grid/enhanced/plugins/Pagination",
+		"dojo/data/ItemFileWriteStore",
+	],
+	function(dom, domForm, request, EnhancedGrid, GridPagination, ItemFileWriteStore) {
+		var gdata = {
+			identifier: "id",
+			items: []
+		}
+		
+		var filterValues = {};
+		profileFields.forEach(function(field) {
+			filterValues[field.id] = domForm.fieldToObject(field.id);
+			//console.log(field.id, filterValues[field.id]);
+		});
+		questionData.forEach(function(question) {
+			//console.log(question);
+			var addToResult = true;
+			for (key in filterValues) {
+				if (addToResult) {
+					//console.log(question[key], filterValues[key]);
+					if (filterValues[key] != "all" && question[key] && question[key] != filterValues[key]) {
+						addToResult = false;
+					}
+				}
+			}
+			
+			if (addToResult) {
+				var dataEntry = {}
+				for (key in question) {
+					dataEntry[key] = question[key];
+				}
+				gdata.items.push(dataEntry);
+			}
+		});
+		
+		var newStore = new ItemFileWriteStore({data: gdata});
+		var grid = dijit.byId("grid");
+		grid.setStore(newStore);
+	});
+}
+
+function renderTableFilters() {
+	require([
+		"dojo/dom"
+	],
+	function(dom) {
+		var filtersDiv = dom.byId("filters");
+		var filtersHTML = "";
+		if (profileFields) {
+			profileFields.forEach(function(field) {
+				filtersHTML += "<div class='filtersText'>" + field.display + "</div>";
+				filtersHTML += "<select id='" + field.id + "' name='" + field.id + "' class='filtersSelectField' onchange='filterQuestions();'>"
+				filtersHTML += "<option value='all'>All</option>";
+				field.values.forEach(function(value) {
+					filtersHTML += "<option value='" + value + "'>" + value + "</option>";
+				});
+				filtersHTML += "</select>";
+				filtersHTML += "</div>";
+			});
+			filtersDiv.innerHTML = filtersHTML;
+		}
+	});
+}
+
+function download() {
+	require([
+		"dojo/dom",
+		"dojo/dom-construct"
+	],
+	function(dom, domConstruct) {
+		var data = "";
+		var header = false;
+		questionData.forEach(function(question) {
+			//console.log(question);
+			var line = "";
+			if (!header) {
+				for (key in question) {
+					line += key + "\t";
+				}
+				line += "\n";
+				header = true;
+			}
+			for (key in question) {
+				line += question[key] + "\t";
+			}
+			line += "\n";
+			//console.log(line);
+			data += line;
+		})
+		
+		var divDownload = dom.byId("download");
+		domConstruct.empty(divDownload);
+		var blob = new Blob([data], { type: 'text/plain;charset=utf-8;' });
+		var url = URL.createObjectURL(blob);     
+		domConstruct.create("a", { id: "downloadLink", href: url, download: "questions.txt", innerHTML: "link", style: "visibility:hidden" }, divDownload);
+		var downloadLink = dom.byId("downloadLink");
+		downloadLink.click();
+	});
+}
+
+function deleteQuestions() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style",
+		"dojo/request"
+	],
+	function(dom, domClass, domStyle, request) {
+		var grid = dijit.byId("grid");
+		var items = grid.selection.getSelected();
+		var itemsMap = dojo.map(items, function(item) {
+			return {question_id: grid.store.getValue(item, "question_id"), question: grid.store.getValue(item, "question")};
+		}, grid);
+		
+		if (itemsMap.length > 0) {
+			showProgress();
+			grid.selection.clear();
+			
+			var url = "api/deletequestions";
+			var options = {
+				method: "POST",
+				handleAs: "json",
+				data: {
+					questions: JSON.stringify(itemsMap)
+				}
+			}
+			var deferred = request(url, options);
+			deferred.then(function(result) {
+				console.log("API call " + url + " successful");
+				console.log(result);
+				load(true);
+			}, function(error){
+				console.log("API call " + url + " failed with error:" + error);
+				hideProgress();
+				clearPromptMsg();
+			});
+		}
+	});
+}
+
+function showDeletePrompt() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class"
+	],
+	function(dom, domClass) {
+		var grid = dijit.byId("grid");
+		var items = grid.selection.getSelected();
+		var itemsMap = dojo.map(items, function(item) {
+			return {question_id: grid.store.getValue(item, "question_id"), question: grid.store.getValue(item, "question")};
+		}, grid);
+		
+		if (itemsMap.length > 0) {
+			var promptMsgContainerDiv = dom.byId("promptMsgContainer");
+			var promptMsgTextDiv = dom.byId("promptMsgText");
+			if (itemsMap.length === 1) {
+				promptMsgTextDiv.innerHTML = "Do you really want to delete the question you selected?";
+			} else {
+				promptMsgTextDiv.innerHTML = "Do you really want to delete the " + itemsMap.length + " questions you selected?";
+			}
+			
+			domClass.add(promptMsgContainerDiv, "promptMsg");
+			domClass.remove(promptMsgContainerDiv, "hidden");
+			//window.setTimeout(function() {clearStatusMsg();}, 5000);
+		}
+		console.log(itemsMap);
+	});
+}
+
+function showProgress() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style"
+	],
+	function(dom, domClass, domStyle) {
+		var gridDiv = dom.byId("gridDiv");
+		var chartsDiv = dom.byId("chartsContainerDiv");
+		var progressBar = dom.byId("progressBar");
+		domStyle.set(gridDiv, "opacity", "0.5");
+		domStyle.set(chartsDiv, "opacity", "0.5");
+		domClass.remove(progressBar, "hidden");
+	});
+}
+
+function hideProgress() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style"
+	],
+	function(dom, domClass, domStyle) {
+		var gridDiv = dom.byId("gridDiv");
+		var chartsDiv = dom.byId("chartsContainerDiv");
+		var progressBar = dom.byId("progressBar");
+		domStyle.set(gridDiv, "opacity", "1.0");
+		domStyle.set(chartsDiv, "opacity", "1.0");
+		domClass.add(progressBar, "hidden");
+		
+	});
+}
+
+function clearPromptMsg() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class"
+	],
+	function(dom, domClass) {
+		var promptMsgContainerDiv = dom.byId("promptMsgContainer");
+		domClass.add(promptMsgContainerDiv, "hidden");
+	});
+}
+</script>
+
+<script src="//www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+// Load the Visualization API and the piechart package.
+google.load('visualization', '1', {'packages':['corechart']});
+
+function renderGoalChart(current, goal) {
+	var data = google.visualization.arrayToDataTable([
+	  ['Phase', 'Questions collected', { role: 'style' }, 'Remaining', { role: 'style' }],
+	  ['Goal', current, '#8CD211', (goal-current), '#e0e0e0']
+	]);
+
+	var options = {
+	  width: 500,
+	  height: 100,
+	  legend: { position: "none" },
+	  bar: { groupWidth: '75%' },
+	  isStacked: true
+	};
+
+	var chart = new google.visualization.BarChart(document.getElementById('chartDiv'));
+	chart.draw(data, options);
+}
+
+function renderProfileChart(data, field, div) {
+	var profileQuestionMap = {};
+	data.forEach(function(question) {
+		if (!profileQuestionMap[question[field.id]]) {
+			profileQuestionMap[question[field.id]] = 1;
+		} else {
+			profileQuestionMap[question[field.id]]++;
+		}
+	});
+	
+	var questionCounts = [];
+	for (key in profileQuestionMap) {
+		questionCounts.push(profileQuestionMap[key]);
+	}
+	questionCounts.sort(function(a, b){return b-a});
+	
+	var length = field.piechart_entries;
+	if (questionCounts.length < length)
+		length = questionCounts.length;
+	var includeValues = {};
+	for (var i=0; i<length; i++) {
+		//console.log(questionCounts[i]);
+		includeValues[questionCounts[i]] = 1;
+	}
+
+	var data = new google.visualization.DataTable();
+	data.addColumn("string", field.id);
+	data.addColumn("number", "count");
+	for (key in profileQuestionMap) {
+		if (includeValues[profileQuestionMap[key]]) {
+			data.addRow([key, profileQuestionMap[key]]);
+		}
+	}
+	
+	var options = {
+		width: 300,
+		height: 300,
+		title: "Questions by " + field.display,
+		chartArea: {width: "90%", height: "90%"}
+	};
+
+	var chart = new google.visualization.PieChart(document.getElementById(div));
+	chart.draw(data, options);
+}
+</script>
+
+<div class="bodyContainerAdmin">
+	<div class="headerAdmin">
+		<div class="logoContainerAdmin">
+			<div class="logoWatson30"></div>
+		</div>
+		<div class="logoSubcontainerAdmin">
+			<div class="logoQIT30"></div>
+		</div>
+		<div class="customerNameContainerAdmin">{{customer}}</div>
+	</div>
+	<div class="contentContainerAdmin">
+		<div id="chartsContainerDiv" class="chartsContainerAdmin">
+			<table>
+				<tr>
+					<td><div id="chartDiv"></div></td>
+					<td><div id="profile1ChartDiv"></div></td>
+					<td><div id="profile2ChartDiv"></div></td>
+					<td><div id="profile3ChartDiv"></div></td>
+				</tr>
+			</table>
+		</div>
+		<div class="filtersContainerAdmin">
+			<form id="filtersForm" onkeydown="if (event.keyCode == 13) { getLogData(true); return false; }">
+			<div id="filters"></div>
+			<!--
+			<div class="filtersText">Experience Level</div>
+			<select id="level" name="level" class="filtersSelectField">
+				<option value="all">All</option>
+				<option value="New (less than 3 months)">New (less than 3 months)</option>
+				<option value="Staff (3 months+)">Staff (3 months+)</option>
+				<option value="Manager">Manager</option>
+				<option value="Supervisor">Supervisor</option>
+			</select>
+			<div class="filtersText">State</div>
+			<select id="state" name="state" class="filtersSelectField">
+				<option value="all">All</option>
+				<option value="Alabama">Alabama</option>
+				<option value="Alaska">Alaska</option>
+				<option value="Arizona">Arizona</option>
+				<option value="Arkansas">Arkansas</option>
+				<option value="California">California</option>
+			</select>-->
+			
+			<div class="btnContainerAdmin">
+				<div class="btnDelete" onclick="showDeletePrompt();"></div>
+			</div>
+			<div class="btnContainerAdmin">
+				<div class="btnDownload" onclick="download();"></div>
+			</div>
+		</div>
+		<div id="promptMsgContainer" class="promptMsgContainer hidden">
+			<div class="promptMsgContents">
+				<div id="promptMsgText" class="promptMsgText">Do you want to delete the selected questions?</div>
+				<div class="btnYes" onclick="deleteQuestions()"></div>
+				<div class="btnNo" onclick="clearPromptMsg()"></div>
+				<div id="progressBar" dojoType="dijit.ProgressBar" indeterminate="true" class="progressBar hidden"></div>
+			</div>
+		</div>
+		<div id="gridDiv" style="width:100%;"></div>
+	</div>
+	<div id="download"></div>
+	<div class="footerAdmin"></div>
+</div>	
+

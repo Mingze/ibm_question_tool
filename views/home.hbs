@@ -1,0 +1,657 @@
+<script>
+var profileFields = null;
+var helpTextVisible = true;
+var questionCleared = false;
+var cookieExpiration = 5;
+var questionsCollected = [];
+
+require([
+	"dojo/domReady!"
+],
+function() {
+	load();
+});
+
+function load() {
+	require([
+		"dojo/dom",
+		"dojo/request",
+		"dojo/cookie"
+	],
+	function(dom, request, cookie) {
+		if (cookie("IBMWatsonQIT")) {
+		//	console.log("in load:IBMWatsonQIT cookie found with ID ", cookie("IBMWatsonQIT"));
+
+			var id = cookie("IBMWatsonQIT");
+			var url = "api/question/" + id;
+			var options = {
+				method: "GET",
+				handleAs: "json"
+			}
+			var deferred = request(url, options);
+			deferred.then(function(result) {
+				//console.log(result);
+				
+				setConfiguration(result.profile_fields);
+				setSubmittedQuestions(result.questions);
+
+			}, function(error){
+				console.log("API call " + url + " failed with error:" + error);
+				setConfiguration(null);
+			});
+			
+		} else {
+			
+			setConfiguration(null);
+			setSubmittedQuestions(null);
+		}
+	});
+}
+
+
+function countQuestions(domaine) {
+	require([
+		"dojo/dom",
+		"dojo/request"
+	],
+	function(dom, request, cookie) {
+		
+			
+			var url = "api/questions";
+			var options = {
+				method: "GET",
+				handleAs: "json"
+			}
+			var count = 0;
+			var deferred = request(url, options);
+			deferred.then(function(result) {
+					result.questions.forEach(function(field) {
+
+						questionsCollected += field.question;
+
+						field.profile_fields.forEach(function(field1){
+							//console.log(field1.value)
+								if(field1.value.trim()==domaine.trim()){
+								
+								count++
+								};
+							})
+					});
+					
+				  document.getElementById("collected").innerHTML=count;
+				 // console.log(questionsCollected);
+			}, function(error){
+				console.log("API call " + url + " failed with error:" + error);
+				
+			});
+			
+			
+	});
+}
+
+function setConfiguration(profileValues) {
+	require([
+		"dojo/dom",
+		"dojo/request",
+	],
+	function(dom, request) {
+		var profileValuesMap = {};
+		if (profileValues) {
+			profileValues.forEach(function(field) {
+				profileValuesMap[field.id] = field.value;
+			});
+		}
+		
+		var url = "api/configuration";
+		var options = {
+			method: "GET",
+			handleAs: "json"
+		}
+		var deferred = request(url, options);
+		deferred.then(function(result) {
+			//	console.log(result)
+			cookieExpiration = result.configuration.cookie_expiration;
+			
+			var helpText = dom.byId("helpText");
+			helpText.innerHTML = result.configuration.help_text;
+			
+			var profileFieldsHTML = "";
+			profileFields = result.configuration.profile_fields;
+			result.configuration.profile_fields.forEach(function(field) {
+				profileFieldsHTML += "<tr>";
+				//profileFieldsHTML += "<td class='profileFieldName'>";
+				//profileFieldsHTML += field.display;
+				//profileFieldsHTML += "</td>";
+				switch(field.type) {
+					case "select":
+						profileFieldsHTML += "<td class='profileFieldValue'>";
+						profileFieldsHTML += "<select onchange='calcul();' id=" + field.id + " name=" + field.id + " class='profileSelectField'>";
+						profileFieldsHTML += "<option value='0' disabled selected>Select...</option>";
+						field.values.forEach(function(value) {
+							if (profileValuesMap[field.id] == value) {
+								profileFieldsHTML += "<option value='" + value + "' selected>" + value + "</option>";
+							} else {
+								profileFieldsHTML += "<option value='" + value + "'>" + value + "</option>";
+							}
+						});
+						profileFieldsHTML += "</select>"
+						profileFieldsHTML += "</td>";
+						break;
+				}
+				profileFieldsHTML += "</tr>";
+			});
+			
+			var profileTable = dom.byId("profileTable");
+			profileTable.innerHTML = profileFieldsHTML;
+		}, function(error){
+			console.log("API call " + url + " failed with error:" + error);
+		});
+	});
+}
+
+function setSubmittedQuestions(questions) {
+	require([
+		"dojo/dom"
+	],
+	function(dom) {
+		var submittedQuestionsDiv = dom.byId("submittedQuestions");
+
+		if (questions) {
+			if (questions.length > 0) {
+				var input_text = dom.byId("question");
+				input_text.value="";
+				submittedQuestionsDiv.innerHTML = "";
+				
+				questions.forEach(function(question) {
+					submittedQuestionsDiv.innerHTML += "<div class='submittedQuestion'>" + question + "</div>";
+				});
+			} else {
+				submittedQuestionsDiv.innerHTML = "<div class='submittedQuestion'>Please enter your question!</div>";
+			}
+		}
+		else
+		{
+			submittedQuestionsDiv.innerHTML = "<div class='submittedQuestion'>Please enter your question!</div>";
+		}
+	});
+}
+
+function clearQuestion() {
+
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style"
+	],
+	function(dom, domClass, domStyle) {
+		var question = dom.byId("question");
+		
+		if (!questionCleared) {
+			question.value = "";
+			var helpTextContainer = dom.byId("helpTextContainer");
+			domClass.add(helpTextContainer, "hidden");
+			var btnHelp = dom.byId("btnHelp");
+			domClass.remove(btnHelp, "btnHelpOn");
+			domClass.add(btnHelp, "btnHelp");
+			helpTextVisible = false;
+			question.value = "";
+			questionCleared = false;
+		}
+	});
+}
+
+function submit() {
+	require([
+		"dojo/dom",
+		"dojo/dom-form",
+		"dojo/dom-class",
+		"dojo/request",
+		"dojo/cookie"
+	],
+	function(dom, domForm, domClass, request, cookie) {
+		var question = domForm.fieldToObject("question");
+		if (question == "" || question == "Enter your question here") {
+			var questionErrorContainer = dom.byId("questionErrorContainer");
+			var questionError = dom.byId("questionError");
+			domClass.remove(questionErrorContainer, "hidden");
+			questionError.innerHTML = "Please enter your question!";
+			window.setTimeout(function() {clearErrors();}, 3000);
+		} else {
+			showProgress();
+			var id = "";
+			if (cookie("IBMWatsonQIT")) {
+				console.log("IBMWatsonQIT cookie found with ID ", cookie("IBMWatsonQIT"));
+				id = cookie("IBMWatsonQIT");
+			}
+			var fields = [];
+			profileFields.forEach(function(field) {
+				var fieldValue = domForm.fieldToObject(field.id);
+				fields.push({id: field.id, value: fieldValue});
+			});
+			var doublon = 0;
+			var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            
+          	if (questionsCollected.indexOf(question) >= 0) {
+    			doublon = 1;
+    			alert("The same question has been entered.");
+    		} 
+			var team = document.getElementById("team").value;
+
+			var url = "api/save";
+			var options = {
+				method: "POST",
+				handleAs: "json",
+				data: {
+					id: id,
+					question: question,	
+					profile_fields: JSON.stringify(fields),
+					name:name,
+					email: email,
+					team: team,
+					duplicate: doublon
+				}
+			}
+			
+			var deferred = request(url, options);
+			deferred.then(function(result) {
+			//	console.log(result);
+				if (cookie("IBMWatsonQIT") != result.id) {
+				//	console.log("setting IBMWatsonQIT cookie with ID ", result.id);
+					cookie("IBMWatsonQIT", result.id, { expires: cookieExpiration });
+				}
+				var statusMsgContainerDiv = dom.byId("statusMsgContainer");
+				var statusMsgDiv = dom.byId("statusMsg");
+				statusMsgDiv.innerHTML = "Votre question a été soumise!";
+
+				domClass.add(statusMsgContainerDiv, "statusMsgSuccess");
+				domClass.remove(statusMsgContainerDiv, "hidden");
+				window.setTimeout(function() {clearStatusMsg();}, 5000);
+				calcul();
+				hideProgress();
+				load();
+			}, function(error){
+				console.log("API call " + url + " failed with error:" + error);
+				var statusMsgContainerDiv = dom.byId("statusMsgContainer");
+				var statusMsgDiv = dom.byId("statusMsg");
+				statusMsgDiv.innerHTML = "There is a server error, please contact the administrater.";
+				domClass.add(statusMsgContainerDiv, "statusMsgError");
+				domClass.remove(statusMsgContainerDiv, "hidden");
+				window.setTimeout(function() {clearStatusMsg();}, 5000);
+				hideProgress();
+			});
+		}
+        
+	});
+}
+
+function showProgress() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style"
+	],
+	function(dom, domClass, domStyle) {
+		var progress = dom.byId("refreshProgress");
+		var btnSubmit = dom.byId("btnSubmit");
+		domClass.remove(progress, "hidden");
+		domStyle.set(btnSubmit, "opacity", "0.5");
+		btnSubmit.removeAttribute("onclick");
+		domClass.remove(btnSubmit, "btnSubmit");
+		domClass.add(btnSubmit, "btnSubmitDisabled");
+	});
+}
+
+function hideProgress() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+		"dojo/dom-style"
+	],
+	function(dom, domClass, domStyle) {
+		var progress = dom.byId("refreshProgress");
+		var btnSubmit = dom.byId("btnSubmit");
+		domClass.add(progress, "hidden");
+		domStyle.set(btnSubmit, "opacity", "1.0");
+		btnSubmit.setAttribute("onclick", "submit()");
+		domClass.remove(btnSubmit, "btnSubmitDisabled");
+		domClass.add(btnSubmit, "btnSubmit");
+	});
+}
+
+function clearErrors() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+	],
+	function(dom, domClass) {
+		var questionErrorContainer = dom.byId("questionErrorContainer");
+		var questionError = dom.byId("questionError");
+		questionError.innerHTML = "";
+		domClass.add(questionErrorContainer, "hidden");
+	});
+}
+
+function clearStatusMsg() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+	],
+	function(dom, domClass) {
+		var statusMsgContainerDiv = dom.byId("statusMsgContainer");
+		var statusMsgDiv = dom.byId("statusMsg");
+		statusMsgDiv.innerHTML = "";
+		domClass.add(statusMsgContainerDiv, "hidden");
+		domClass.remove(statusMsgContainerDiv, "statusMsgSuccess");
+		domClass.remove(statusMsgContainerDiv, "statusMsgError");
+	});
+}
+
+function showHelp() {
+	require([
+		"dojo/dom",
+		"dojo/dom-class",
+	],
+	function(dom, domClass) {
+		var helpTextContainer = dom.byId("helpTextContainer");
+		var btnHelp = dom.byId("btnHelp");
+		if (helpTextVisible) {
+			domClass.add(helpTextContainer, "hidden");
+			domClass.remove(btnHelp, "btnHelpOn");
+			domClass.add(btnHelp, "btnHelp");
+			helpTextVisible = false;
+		} else {
+			domClass.remove(helpTextContainer, "hidden");
+			domClass.remove(btnHelp, "btnHelp");
+			domClass.add(btnHelp, "btnHelpOn");
+			helpTextVisible = true;
+		}
+	});
+}
+
+
+
+</script>
+
+	
+			<script src="assets/js/cookie.js"></script>
+				<!-- Header -->
+					<header id="header">
+					<h1>IBM Watson Question Collection Tool</h1>
+			
+					<nav>
+						<ul>
+							<li onclick="logout()"><a>Log Out</a></li>
+						</ul>
+					</nav> 
+			</header>
+   
+            
+<!-- Modal -->
+		
+            <div id="openModal" class="modalDialog">
+                <div>
+                    <h4>Senarios</h4>
+                    <p><i>Some text like Don"t forget change the domain.</i></p>
+		  				<div class="divider_modal"></div>
+                    <a href="#close" title="Close" class="close">X</a>
+                    
+                    <p><div id="senario_text"></div></p>
+                    <button class="modal_button" onclick="change_text()">Show me another one !</button>
+                </div>
+            </div>
+            
+<script>
+
+/*Add senarios*/
+var senario =[
+"Senario 1: Lorem ipsum dolor sit amet, consectetur",
+"Senario 2: Lorem ipsum dolor sit amet, consectetur",
+"Senario 3: Lorem ipsum dolor sit amet, consectetur",
+"Senario 4: Lorem ipsum dolor sit amet, consectetur",
+"Senario 5: Lorem ipsum dolor sit amet, consectetur",
+"Senario 6: Lorem ipsum dolor sit amet, consectetur",
+"Senario 7: Lorem ipsum dolor sit amet, consectetur",
+"Senario 8: Lorem ipsum dolor sit amet, consectetur",
+"Senario 9: Lorem ipsum dolor sit amet, consectetur"
+];
+
+/*Show senarios in a random way*/
+ function change_text(){
+	var random = Math.round(Math.random()*(senario.length-1));
+	document.getElementById("senario_text").innerHTML=senario[random];
+}
+</script>
+			<section id="intro" class="main style1 dark fullscreen">
+				<div class="content">
+					
+ 					<header>
+						<h2>Presentation</h2>
+					</header>
+					<p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					<header>
+						<h2>Objectifs</h2>
+					</header>
+					<ul>
+						<li><strong>Lorem</strong>ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</li>
+						<li><strong>tempor incididunt</strong>ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo</li>
+						<li><strong>An objectif</strong> of collecting 500 questions per domain.</li>
+						<li><strong>An global objectif </strong> of 6000 questions.</li>
+					</ul>
+				<footer>
+					<!--<a href="#two" class="button style2 down" >Next</a><br>-->
+					<a href="#one" class="button style2 down" onclick="ShowNext('one');">Next</a>
+				</footer>
+			    </div>
+			   
+			</section>
+		
+				
+		<script>
+
+            function ShowNext(id){
+               var obj = document.getElementById(id);
+               obj.style.display = "block";
+            };
+
+        </script>
+
+		<section id="one" class="main style1 dark fullscreen" >
+			<div class="content">
+				<img src="images/ibm2.gif" width ="250px" />
+				<header>
+
+					<h2 id="quote">Your information</h2>
+				</header>
+				
+				<div class="profileSelectField"><input id="name" type="text" name="name" placeholder="First Name" /></div>
+				<div class="profileSelectField"><input id ="email" type="email" name="email" placeholder="Email Adress" /></div>	
+				<p><i>Add some texts</i></p>
+				<div class="field half">
+				<!--<textarea name="message" placeholder="Message" rows="6"></textarea>-->
+
+				<h3>Team</h3>
+				<select name ="équipe" placeholder ="Equipe" id="team" class="profileSelectField" value= "Team">
+					<option value="0" disabled selected>Select... </option>
+					<option value="team1"> Team 1 </option>
+					<option value="team2"> Team 2 </option>
+					<option value="team3"> Team 3 </option>
+				</select>
+				</div>
+								
+				<footer>
+					<a href="#two" class="button style2 down" onclick="showQuestion();">let's start!</a><br>
+				
+				</footer>
+				
+			</div>
+			
+		</section>
+		<script>
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+            function showQuestion(){
+            	
+                var name = document.getElementById("name");
+                var email = document.getElementById("email");
+                var team = document.getElementById("team");
+                var objtwo = document.getElementById("two");
+                var objone = document.getElementById("one");
+               
+                if (name.value =="")
+                {
+                	
+                	alert("Please enter your name.");
+
+                }
+                else if ( email.value=="" )
+                {
+               
+                	alert("Please enter your adresse.")
+                }
+                else if (!validateEmail(email.value))
+                {
+                	alert("Please enter a valid email adress.");
+                }
+                else if (team.value=="0"){
+                	alert("Please choose your team.");
+                }
+                else {
+                	objtwo.style.display = "block";
+                }             
+            };
+
+        </script>
+
+		
+<script type="text/javascript">
+var quotes=new Array();
+	quotes[0] = "Hey!";
+	quotes[1] = "Hello!";
+	quotes[2] = "Bonjour!";
+	quotes[3] = "Hi!";
+	quotes[4] = "Ciao!";
+var tuto = new Array();
+	tuto[0] = "Vous savez?";
+	tuto[1] = "Tuto?";
+	tuto[2] = "Règles!";
+	tuto[3] = "Entrez vos questions!";
+	tuto[4] = "Une autre question?";
+
+var q = quotes.length;
+var whichquote=Math.round(Math.random()*(q-1));
+function showquote(){
+	var x = document.getElementById("quote").innerHTML;
+	//document.getElementById("quote").innerHTML=quotes[whichquote];
+}
+showquote();
+</script>
+	
+	<section id="two" class="main style1 dark fullscreen">
+
+			<div class="content">
+				<img src="images/ibm2.gif" width ="250px" />
+				<div class="thematique">
+				<h3>My question: </h3>
+				
+				<table id="profileTable" class="profileTable"></table>
+				<p><span id="collected"></span> of 1500 questions collected in this domain!</p>
+				</div>
+					<h2 id="tuto">My question:</h2>
+
+					<!--<input id="question" name="question" class="form-control" type="search" placeholder="Entrez votre question ici..." onclick="clearQuestion();"/> -->
+					<input id="question" name="question" class="form-control" type="search" placeholder="Entrez votre question ici..." />
+					<p> <a href="#openModal" onclick="change_text()"><img class="senario" width = "55px" src="/images/icon_senario.png"/>Need some inspiration ?</a></p>
+					
+					<div id="helpTextContainer" class="helpContainer">
+						<div id="helpText" class="helpText"></div>
+					</div>
+					<div id="refreshProgress" class="progressIndicator hidden"></div>
+					<div id="statusMsgContainer" class="statusMsgContainer hidden">
+						<div id="statusMsg" class="statusMsg"></div>
+			
+<script>
+function submit_pre(){
+	var domaine = document.getElementById("domaine");
+	if (domaine.value=="0"){
+        alert("Please choose a domain.");
+                }
+                else {
+                	submit();
+
+                }
+}
+
+function calcul(){
+	var domaine_selected = document.getElementById("domaine");
+	;
+
+	//console.log("domaine_selected:"+domaine_selected.options[ domaine_selected.selectedIndex ].text);
+	countQuestions(domaine_selected.options[ domaine_selected.selectedIndex ].text);
+}
+
+</script>
+
+				
+				
+	  			
+	
+	  			<div class="row top-buffer"></div>
+				<div id="questionErrorContainer" class="questionErrorContainer hidden">
+					<div id="questionError" class="questionError"></div>
+				</div>
+				<div class="button_envoie">
+				 	<button id="btnSubmit" onclick="submit_pre()" type="button" >Send!</button>
+				</div>
+					
+				
+				
+
+				
+			</div>	
+			
+			<footer>
+		  			<div class="row top-buffer"></div>
+		  			<div class="row">
+		  				<div class="divider"></div>
+						<div class="submittedQuestionsContainer">
+							<div class="submittedQuestionsHeading">
+
+							<h3>You latest question sent:</h3>
+
+							</div>
+							<div id="submittedQuestions"></div>
+						</div>
+
+					</div>
+			</footer>
+				
+			</div>
+		
+			
+			
+		</section> 
+
+
+
+		
+<!--
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.poptrox.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			 <script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+				
+			<script src="assets/js/main.js"></script>-->
+		

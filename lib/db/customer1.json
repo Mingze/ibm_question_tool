@@ -1,0 +1,110 @@
+{
+  "_id": "customer1",
+  "name": "Customer One",
+  "questions_db": {
+    "host": "account.cloudant.com",
+    "db": "questions",
+    "username": "apikey",
+    "password": "password"
+  },
+  "cookie_expiration": 10,
+  "questions_goal": 2000,
+  "question_column_width": "40%",
+  "users": [
+    {
+      "id": "qitadmin",
+      "username": "qitadmin",
+      "password": "q1t4y0u"
+    }
+  ],
+  "help_text": "Please phrase the question in the same way a customer would ask an agent. For example, what does liability insurance cover?",
+  "profile_fields": [
+    {
+      "id": "level",
+      "type": "select",
+      "display": "Experience level",
+      "piechart_entries": 5,
+      "column_width": "20%",
+      "values": [
+        "New (less than 3 months)",
+        "Staff (3 months+)",
+        "Manager",
+        "Supervisor"
+      ]
+    },
+    {
+      "id": "state",
+      "type": "select",
+      "display": "State",
+      "piechart_entries": 5,
+      "column_width": "20%",
+      "values": [
+        "Alabama",
+        "Alaska",
+        "Arizona",
+        "Arkansas",
+        "California",
+        "Colorado",
+        "Connecticut",
+        "Delaware",
+        "Florida",
+        "Georgia",
+        "Hawaii",
+        "Idaho",
+        "Illinois",
+        "Indiana",
+        "Iowa",
+        "Kansas",
+        "Kentucky",
+        "Louisiana",
+        "Maine",
+        "Maryland",
+        "Massachusetts",
+        "Michigan",
+        "Minnesota",
+        "Mississippi",
+        "Missouri",
+        "Montana",
+        "Nebraska",
+        "Nevada",
+        "New Hampshire",
+        "New Jersey",
+        "New Mexico",
+        "New York",
+        "North Carolina",
+        "North Dakota",
+        "Ohio",
+        "Oklahoma",
+        "Oregon",
+        "Pennsylvania",
+        "Rhode Island",
+        "South Carolina",
+        "South Dakota",
+        "Tennessee",
+        "Texas",
+        "Utah",
+        "Vermont",
+        "Virginia",
+        "Washington",
+        "West Virginia",
+        "Wisconsin",
+        "Wyoming"
+      ]
+    },
+    {
+      "id": "department",
+      "type": "select",
+      "display": "Department",
+      "piechart_entries": 5,
+      "column_width": "20%",
+      "values": [
+        "Finance",
+        "HR",
+        "IT",
+        "Marketing",
+        "Sales",
+        "Support"
+      ]
+    }
+  ]
+}

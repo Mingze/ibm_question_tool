@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>IBM Watson - Question Collection Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta property="og:image" content="conversation.svg" />
+  <meta property="og:title" content="Nestore - Login" />
+  <meta property="og:description" content="Orange Bank Answer Store - Watson" />
+  <link rel="shortcut icon" href="orange.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="style/loginStyle.css">
+</head>
+
+<body>
+	<div class="row">
+		<div class="logo">
+			<img src="images/ibm2.gif">
+		</div>
+		<div class="container">
+			<!--<div class="form-side-panel"></div>-->
+			<form class="form-signin">
+				<h4 class="section-heading"><p>Authentification</p></h4>
+                <span>Hi,<span><br>
+                <span>Change the enter code in 'login.html', here is for this asset the password is <i>ibmwatson</i>:<span>
+                    <br><br>
+				
+				<div class="row">
+					<div class="column">
+						<input id="password" class="full-width" type="password" placeholder="">
+					</div>
+				</div>
+				<br/>
+				<input class="button-submit" type="submit" value="Submit" onclick="checkCredentials(form); return false;">
+				
+				<div class="row">
+					<!--<a href="#" class="forgot">Reset your password</a>-->
+					<p id='wrgCreds' class="wrongCreds">The password is not correct, please retry. </p>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<script src="assets/js/auth.js"></script>
+</body>
+</html>
