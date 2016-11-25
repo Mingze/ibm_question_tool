@@ -391,35 +391,35 @@ function showHelp() {
 		
             <div id="openModal" class="modalDialog">
                 <div>
-                    <h4>Senarios</h4>
+                    <h4>scenarios</h4>
                     <p><i>Some text like Don"t forget change the domain.</i></p>
 		  				<div class="divider_modal"></div>
                     <a href="#close" title="Close" class="close">X</a>
                     
-                    <p><div id="senario_text"></div></p>
+                    <p><div id="scenario_text"></div></p>
                     <button class="modal_button" onclick="change_text()">Show me another one !</button>
                 </div>
             </div>
             
 <script>
 
-/*Add senarios*/
-var senario =[
-"Senario 1: Lorem ipsum dolor sit amet, consectetur",
-"Senario 2: Lorem ipsum dolor sit amet, consectetur",
-"Senario 3: Lorem ipsum dolor sit amet, consectetur",
-"Senario 4: Lorem ipsum dolor sit amet, consectetur",
-"Senario 5: Lorem ipsum dolor sit amet, consectetur",
-"Senario 6: Lorem ipsum dolor sit amet, consectetur",
-"Senario 7: Lorem ipsum dolor sit amet, consectetur",
-"Senario 8: Lorem ipsum dolor sit amet, consectetur",
-"Senario 9: Lorem ipsum dolor sit amet, consectetur"
+/*Add scenarios*/
+var scenario =[
+"scenario 1: Lorem ipsum dolor sit amet, consectetur",
+"scenario 2: Lorem ipsum dolor sit amet, consectetur",
+"scenario 3: Lorem ipsum dolor sit amet, consectetur",
+"scenario 4: Lorem ipsum dolor sit amet, consectetur",
+"scenario 5: Lorem ipsum dolor sit amet, consectetur",
+"scenario 6: Lorem ipsum dolor sit amet, consectetur",
+"scenario 7: Lorem ipsum dolor sit amet, consectetur",
+"scenario 8: Lorem ipsum dolor sit amet, consectetur",
+"scenario 9: Lorem ipsum dolor sit amet, consectetur"
 ];
 
-/*Show senarios in a random way*/
+/*Show scenarios in a random way*/
  function change_text(){
-	var random = Math.round(Math.random()*(senario.length-1));
-	document.getElementById("senario_text").innerHTML=senario[random];
+	var random = Math.round(Math.random()*(scenario.length-1));
+	document.getElementById("scenario_text").innerHTML=scenario[random];
 }
 </script>
 			<section id="intro" class="main style1 dark fullscreen">
@@ -569,7 +569,7 @@ showquote();
 				</div>
 					<h2 id="tuto">My question:</h2>
 					<input id="question" name="question" class="form-control" type="search" placeholder="Enter your question here..." />
-					<p> <a href="#openModal" onclick="change_text()"><img class="senario" width = "55px" src="/images/icon_senario.png"/>Need some inspiration ?</a></p>
+					<p> <a href="#openModal" onclick="change_text()"><img class="scenario" width = "55px" src="/images/icon_scenario.png"/>Need some inspiration ?</a></p>
 					
 					<div id="helpTextContainer" class="helpContainer">
 						<div id="helpText" class="helpText"></div>
