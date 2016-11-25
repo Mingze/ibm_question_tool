@@ -11,15 +11,20 @@ Fonctionnalities:
 - Show some scenarios to inspire users on the questions.
 
 Screenshots:
+
 Page login:
 - ![Graph](screenshot/login.png "Graph")
+
 First page, here you can add some information and the objectifs:
 - ![Graph](screenshot/page1.png "Graph")
+
 Second page, here we ask  here you can add some information:
 - ![Graph](screenshot/page2.png "Graph")
+
 Third page, choose a domain and post a question:
 - ![Graph](screenshot/page3.png "Graph")
 - ![Graph](screenshot/page5.png "Graph")
+
 Third page, you can also add some scenarios to help custumers to choose:
 - ![Graph](screenshot/page4.png "Graph")    
 
